@@ -39,25 +39,82 @@ public:
 
 	inline float &operator[](int i) { return e[i]; }
 
-	inline vec3 &operator+=(const vec3 &v2);
+	inline vec3 &operator+=(const vec3 &v) {
+		e[0] += v.e[0];
+		e[1] += v.e[1];
+		e[2] += v.e[2];
+		return *this;
+	}
 
-	inline vec3 &operator-=(const vec3 &v2);
+	inline vec3 &operator-=(const vec3 &v) {
+		e[0] -= v.e[0];
+		e[1] -= v.e[1];
+		e[2] -= v.e[2];
+		return *this;
+	}
 
-	inline vec3 &operator*=(const vec3 &v2);
+	//inline vec3 &operator*=(const vec3 &v);
 
-	inline vec3 &operator/=(const vec3 &v2);
+	//inline vec3 &operator/=(const vec3 &v2);
 
-	inline vec3 &operator*=(const float t);
+	inline vec3 &operator*=(const float t) {
+		e[0] *= t;
+		e[1] *= t;
+		e[2] *= t;
+		return *this;
+	}
 
-	inline vec3 &operator/=(const float t);
+	inline vec3 &operator/=(const float t) {
+		e[0] /= t;
+		e[1] /= t;
+		e[2] /= t;
+		return *this;
+	}
 
 	inline float length() const { return sqrt(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]); }
 
 	inline float squared_lenght() const { return e[0] * e[0] + e[1] * e[1] + e[2] * e[2]; }
 
-	inline void make_unit_vector();
+	inline void make_unit_vector() {
+		int length = this->length();
+		e[0] /= length;
+		e[1] /= length;
+		e[2] /= length;
+	}
 
 	float e[3];
 };
+
+inline vec3 operator+(const vec3 &v1, const vec3 &v2) {
+	return vec3(v1.e[0] + v2.e[0], v1.e[1] + v2.e[1], v1.e[2] + v2.e[2]);
+}
+
+inline vec3 operator-(const vec3 &v1, const vec3 &v2) {
+	return vec3(v1.e[0] - v2.e[0], v1.e[1] - v2.e[1], v1.e[2] - v2.e[2]);
+}
+
+inline vec3 operator*(const vec3 &v1, const vec3 &v2) {
+	return vec3(v1.e[0] * v2.e[0], v1.e[1] * v2.e[1], v1.e[2] * v2.e[2]);
+}
+
+inline vec3 operator/(const vec3 &v1, const vec3 &v2) {
+	return vec3(v1.e[0] / v2.e[0], v1.e[1] / v2.e[1], v1.e[2] / v2.e[2]);
+}
+
+inline float dot(const vec3 &v1, const vec3 &v2) {
+	return v1.e[0] * v2.e[0] + v1.e[1] * v2.e[1] + v1.e[2] * v2.e[2];
+}
+
+inline vec3 cross(const vec3 &v1, const vec3 &v2) {
+	return vec3(
+			v1.e[1] * v2.e[2] - v1.e[2] * v2.e[1],
+			-(v1.e[0] * v2.e[2] - v1.e[2] * v2.e[0]),
+			v1.e[0] * v2.e[1] - v1.e[1] * v2.e[0]
+	);
+}
+
+inline vec3 unit_vector(vec3 v) {
+	return v / v.length();
+}
 
 #endif //RAYTRACINGTOY_VEC3_H
