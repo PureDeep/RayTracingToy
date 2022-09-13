@@ -8,24 +8,35 @@
 /// \param radius 半径
 /// \param r 射线
 /// \return 是否相交
-bool hit_sphere(const vec3 &center, float radius, const ray &r) {
+float hit_sphere(const vec3 &center, float radius, const ray &r) {
 	vec3 oc = r.origin() - center;
 	float a = dot(r.direction(), r.direction()); // 一元二次方程系数a
 	float b = 2.0 * dot(oc, r.direction());
 	float c = dot(oc, oc) - radius * radius;
 	float discriminant = b * b - 4 * a * c;
-	return (discriminant > 0);
+	if (discriminant < 0) {
+		return -1.0;
+	} else {
+		// 一元二次方程的两个解中较小的那个，即先发生碰撞的点
+		return (-b - sqrt(discriminant) / (2.0 * a));
+	}
 }
 
 /// color(ray)函数根据Y坐标的上/下限线性地混合白色和蓝色。
 /// \param r 射线
 /// \return 返回射线所指向的点的颜色
 vec3 color(const ray &r) {
-	if (hit_sphere(vec3(0, 0, -1), 0.5, r)) {
-		return vec3(1, 0, 0); // 如果射线与球心为(0,0,-1)，半径为0.5的球相交，则返回红色
+	// 求得射线与球发生相交时的第一个点对应的t
+	float t = hit_sphere(vec3(0, 0, -1), 0.5, r);
+	if (t > 0.0) {
+		// 求得球心指向交点的法线单位向量
+		vec3 N = unit_vector(r.point_at_parameter(t) - vec3(0, 0, -1));
+		// 将求得的法线单位向量由[-1,1]映射到[0,1]
+		return 0.5 * vec3(N.x() + 1, N.y() + 1, N.z() + 1);
 	}
 	vec3 unit_direction = unit_vector(r.direction()); // 射线的单位方向向量
-	float t = 0.5 * (unit_direction.y() + 1.0);
+	// 将y从[-1,1]映射到[0,1]
+	t = 0.5 * (unit_direction.y() + 1.0);
 	// 返回混合后的值
 	// vec3(1.0, 1.0, 1.0)是白色，vec3(0.5, 0.7, 1.0f)是蓝色
 	return (1.0f - t) * vec3(1.0, 1.0, 1.0) + t * vec3(0.5, 0.7, 1.0);
