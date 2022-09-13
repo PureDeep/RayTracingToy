@@ -11,12 +11,13 @@ class sphere : public hitable {
 public:
 	sphere() {}
 
+	// 构造球心为cen，半径为r的球体
 	sphere(vec3 cen, float r) : center(cen), radius(r) {};
 
 	virtual bool hit(const ray &r, float tmin, float tmax, hit_record &rec) const;
 
-	vec3 center;
-	float radius;
+	vec3 center; // 球心坐标
+	float radius; // 球体半径
 };
 
 bool sphere::hit(const ray &r, float tmin, float tmax, hit_record &rec) const {
@@ -26,6 +27,9 @@ bool sphere::hit(const ray &r, float tmin, float tmax, hit_record &rec) const {
 	float c = dot(oc, oc) - radius * radius;
 	float discriminant = b * b - a * c;
 	if (discriminant > 0) {
+		// 射线与球体相交时，找出参数t处于[tmin,tmax]范围内的交点
+		// 两个交点都在范围内的话，返回参数t较小的那个（即先碰撞的点）
+		// 将碰撞点信息存储rec中
 		float temp = (-b - sqrt(b * b - a * c)) / a;
 		if (temp < tmax && temp > tmin) {
 			rec.t = temp;
