@@ -7,7 +7,6 @@
 #include "hitablelist.h"
 #include "camera.h"
 #include "random"
-#include <time.h>
 #include <iostream>
 
 #define random(a, b) (rand()%(b-a+1)+a) //使用rand()的一个后果是，种子相同时每次的随机结果都相同
@@ -78,7 +77,8 @@ int main() {
 			}
 
 			col /= float(ns);
-
+			// 进行gamma补偿
+			col = vec3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
 			// 将（0，1）映射到（0，255.99）
 			int ir = int(255.99 * col[0]);
 			int ig = int(255.99 * col[1]);
