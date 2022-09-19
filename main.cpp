@@ -8,7 +8,7 @@
 #include "camera.h"
 #include "random"
 
-#define random(a, b) (rand()%(b-a+1)+a)
+#define random(a, b) (rand()%(b-a+1)+a) //使用rand()的一个后果是，每次的随机结果都相同
 
 ///
 /// \param r 射线
