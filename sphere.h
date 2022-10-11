@@ -6,18 +6,20 @@
 #define RAYTRACINGTOY_SPHERE_H
 
 #include "hitable.h"
+#include "material.h"
 
 class sphere : public hitable {
 public:
 	sphere() {}
 
 	// 构造球心为cen，半径为r的球体
-	sphere(vec3 cen, float r) : center(cen), radius(r) {};
+	sphere(vec3 cen, float r, material *mat) : center(cen), radius(r), mat_ptr(mat) {};
 
 	virtual bool hit(const ray &r, float tmin, float tmax, hit_record &rec) const;
 
 	vec3 center; // 球心坐标
 	float radius; // 球体半径
+	material *mat_ptr; // 球体材质
 };
 
 bool sphere::hit(const ray &r, float tmin, float tmax, hit_record &rec) const {
@@ -35,6 +37,7 @@ bool sphere::hit(const ray &r, float tmin, float tmax, hit_record &rec) const {
 			rec.t = temp;
 			rec.p = r.point_at_parameter(rec.t);
 			rec.normal = (rec.p - center) / radius;
+			rec.mat_ptr = mat_ptr;
 			return true;
 		}
 		temp = (-b + sqrt(b * b - a * c)) / a;
@@ -42,6 +45,7 @@ bool sphere::hit(const ray &r, float tmin, float tmax, hit_record &rec) const {
 			rec.t = temp;
 			rec.p = r.point_at_parameter(rec.t);
 			rec.normal = (rec.p - center) / radius;
+			rec.mat_ptr = mat_ptr;
 			return true;
 		}
 	}

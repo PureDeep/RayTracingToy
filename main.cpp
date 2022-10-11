@@ -6,33 +6,29 @@
 #include "sphere.h"
 #include "hitablelist.h"
 #include "camera.h"
+#include "material.h"
 #include "random"
 #include <iostream>
 
 #define random(a, b) (rand()%(b-a+1)+a) //使用rand()的一个后果是，种子相同时每次的随机结果都相同
 #define random1 (float((rand() % 100) / 100.f))
 
-/// 单位cube随机取点，并返回处于球体内的一点
-/// \return
-vec3 random_in_unit_sphere() {
-	vec3 p;
-	do {
-		//srand((unsigned) time(NULL));
-		p = 2.0 * vec3(random1, random1, random1) - vec3(1, 1, 1);
-		//std::cout << random(0, 100) / 100 << std::endl;
-	} while (dot(p, p) >= 1.0); // 如果点在半径为1的球体外，则重新生成
-	return p;
-}
-
 ///
 /// \param r 射线
 /// \param world 可碰撞物体
+/// \param depth 反射深度
 /// \return 射线交点处的颜色，发生碰撞返回碰撞点法线，未发生碰撞返回背景色
-vec3 color(const ray &r, hitable *world) {
+vec3 color(const ray &r, hitable *world, int depth) {
 	hit_record rec;
-	if (world->hit(r, 0.0, FLT_MAX, rec)) {
-		vec3 target = rec.p + rec.normal + random_in_unit_sphere();
-		return 0.5 * color(ray(rec.p, target - rec.p), world);
+	if (world->hit(r, 0.0001, FLT_MAX, rec)) {
+		ray scattered;
+		vec3 attenuation;
+
+		if (depth < 50 && rec.mat_ptr->scatter(r, rec, attenuation, scattered)) {
+			return attenuation * color(scattered, world, depth + 1);
+		} else {
+			return vec3(0, 0, 0);
+		}
 	} else {
 		// 如果射线没有与物体发生碰撞，则返回背景的颜色
 		vec3 unit_direction = unit_vector(r.direction());
@@ -41,11 +37,12 @@ vec3 color(const ray &r, hitable *world) {
 	}
 }
 
-int main() {
-	int nx = 200;
-	int ny = 100;
 
-	int ns = 200;
+int main() {
+	int nx = 600;
+	int ny = 300;
+
+	int ns = 100;
 
 	// 以写模式打开文件
 	std::ofstream outfile;
@@ -57,9 +54,12 @@ int main() {
 	camera cam;
 
 	hitable *list[2];
-	list[0] = new sphere(vec3(0, 0, -1), 0.5); // 球1
-	list[1] = new sphere(vec3(0, -100.5, -1), 100); // 球2
-	hitable *world = new hitable_list(list, 2);
+	list[0] = new sphere(vec3(0, 0, -1), 0.5, new lambertian(vec3(0.8, 0.3, 0.3))); // 球1
+	list[1] = new sphere(vec3(0, -100.5, -1), 100, new lambertian(vec3(0.8, 0.8, 0.8))); // 球2
+	list[2] = new sphere(vec3(1, 0, -1), 0.5, new metal(vec3(0.8, 0.6, 0.2))); // 球3金属球
+	//list[3] = new sphere(vec3(-1, 0, -1), 0.5, new dielectric(1)); // 球4玻璃球
+	//list[3] = new sphere(vec3(-1, 0, -1), 0.5, new metal(vec3(0.8, 0.6, 0.2))); // 球4金属球
+	hitable *world = new hitable_list(list, 3);
 
 	for (int j = ny - 1; j >= 0; j--) {
 		for (int i = 0; i < nx; i++) {
@@ -73,7 +73,7 @@ int main() {
 
 				ray r = cam.get_ray(u, v);
 				vec3 p = r.point_at_parameter(2.0);
-				col += color(r, world);
+				col += color(r, world, 0);
 			}
 
 			col /= float(ns);
