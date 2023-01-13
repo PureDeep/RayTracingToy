@@ -8,6 +8,7 @@
 #include "camera.h"
 #include "material.h"
 #include "random"
+#include "svpng.inc"
 #include <iostream>
 
 #define random(a, b) (rand()%(b-a+1)+a) //使用rand()的一个后果是，种子相同时每次的随机结果都相同
@@ -45,11 +46,11 @@ int main() {
 	int ns = 100;
 
 	// 以写模式打开文件
-	std::ofstream outfile;
-	outfile.open("color.ppm");
+//	std::ofstream outfile;
+//	outfile.open("color.ppm");
 
 	// PPM格式，P3表示颜色以ASCII表示，200行，100列，最大颜色数量255
-	outfile << "P3\n" << nx << " " << ny << "\n255\n";
+	//outfile << "P3\n" << nx << " " << ny << "\n255\n";
 
 	camera cam;
 
@@ -60,6 +61,19 @@ int main() {
 	//list[3] = new sphere(vec3(-1, 0, -1), 0.5, new dielectric(1)); // 球4玻璃球
 	//list[3] = new sphere(vec3(-1, 0, -1), 0.5, new metal(vec3(0.8, 0.6, 0.2))); // 球4金属球
 	hitable *world = new hitable_list(list, 3);
+
+	// 调用svpng生成png格式图片
+	unsigned char rgb[nx * ny * 3], *p = rgb;
+	unsigned x, y;
+	FILE *fp = fopen("color.png", "wb");
+//	for (y = 0; y < ny; y++)
+//		for (x = 0; x < nx; x++) {
+//			*p++ = (unsigned char)x;    /* R */
+//			*p++ = (unsigned char)y;    /* G */
+//			*p++ = 128;                 /* B */
+//		}
+//	svpng(fp, nx, ny, rgb, 0);
+//	fclose(fp);
 
 	for (int j = ny - 1; j >= 0; j--) {
 		for (int i = 0; i < nx; i++) {
@@ -83,11 +97,18 @@ int main() {
 			int ir = int(255.99 * col[0]);
 			int ig = int(255.99 * col[1]);
 			int ib = int(255.99 * col[2]);
-			outfile << ir << " " << ig << " " << ib << "\n";
+			//outfile << ir << " " << ig << " " << ib << "\n";
+
+			*p++ = (unsigned char)ir;    /* R */
+			*p++ = (unsigned char)ig;    /* G */
+			*p++ = (unsigned char)ib;    /* B */
 		}
 	}
 
-	outfile.close();
+	//outfile.close();
+
+	svpng(fp, nx, ny, rgb, 0);
+	fclose(fp);
 
 	return 0;
 }
