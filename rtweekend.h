@@ -46,6 +46,15 @@ inline double clamp(double x, double min, double max) {
     return x;
 }
 
+// Random vec3
+inline static vec3 random_vec3() {
+    return vec3(random_double(), random_double(), random_double());
+}
+
+inline static vec3 random_vec3(double min, double max) {
+    return vec3(random_double(min, max), random_double(min, max), random_double(min, max));
+}
+
 // Common Headers
 #include "ray.h"
 #include "vec3.h"
