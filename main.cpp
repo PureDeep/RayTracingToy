@@ -14,23 +14,34 @@
 #define random(a, b) (rand()%(b-a+1)+a) //使用rand()的一个后果是，种子相同时每次的随机结果都相同
 #define random1 (float((rand() % 100) / 100.f))
 
-bool hit_sphere(const vec3 &center, double radius, const ray &r) {
+// 球体表面法相
+double hit_sphere(const vec3 &center, double radius, const ray &r) {
     vec3 oc = r.origin() - center;
 
     auto a = dot(r.direction(), r.direction());
     auto b = 2.0 * dot(oc, r.direction());
     auto c = dot(oc, oc) - radius * radius;
     auto discriminant = b * b - 4 * a * c;
-    return (discriminant > 0);
+
+    if (discriminant < 0) {
+        return -1.0;
+    } else {
+        return (-b - sqrt(discriminant)) / (2.0 * a);
+    }
 }
 
 vec3 ray_color(const ray &r) {
-    // 位置坐标（右左，上下，远近）
-    // ToDo: distance > 0
-    if (hit_sphere(vec3(1, 1, -1), 0.5, r))
-        return vec3(1, 0, 0);
+    // 位置坐标（右左，上下，远近） ToDo: distance > 0
+    auto t = hit_sphere(vec3(0, 0, -1), 0.5, r);
+
+    // 如果相交
+    if (t > 0.0) {
+        vec3 N = unit_vector(r.at(t) - vec3(0, 0, -1));
+        return 0.5 * vec3(N.x() + 1, N.y() + 1, N.z() + 1);
+    }
+    // 如果不相交
     vec3 unit_direction = unit_vector(r.direction());
-    auto t = 0.5 * (unit_direction.y() + 1.0);
+    t = 0.5 * (unit_direction.y() + 1.0);
     return (1.0 - t) * vec3(1.0, 1.0, 1.0) + t * vec3(0.5, 0.7, 1.0);
 }
 
