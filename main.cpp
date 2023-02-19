@@ -4,7 +4,7 @@
 #include "vec3.h"
 #include "ray.h"
 #include "sphere.h"
-#include "hitablelist.h"
+#include "hittablelist.h"
 #include "camera.h"
 #include "material.h"
 #include "random"

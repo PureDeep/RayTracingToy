@@ -7,7 +7,7 @@
 struct hit_record; // 不完全声明
 
 #include "ray.h"
-#include "hitable.h"
+#include "hittable.h"
 
 #define random(a, b) (rand()%(b-a+1)+a) //使用rand()的一个后果是，种子相同时每次的随机结果都相同
 #define random1 (float((rand() % 100) / 100.f))
@@ -15,13 +15,13 @@ struct hit_record; // 不完全声明
 /// 单位cube随机取点，并返回处于球体内的一点
 /// \return
 vec3 random_in_unit_sphere() {
-	vec3 p;
-	do {
-		//srand((unsigned) time(NULL));
-		p = 2.0 * vec3(random1, random1, random1) - vec3(1, 1, 1);
-		//std::cout << random(0, 100) / 100 << std::endl;
-	} while (dot(p, p) >= 1.0); // 如果点在半径为1的球体外，则重新生成
-	return p;
+    vec3 p;
+    do {
+        //srand((unsigned) time(NULL));
+        p = 2.0 * vec3(random1, random1, random1) - vec3(1, 1, 1);
+        //std::cout << random(0, 100) / 100 << std::endl;
+    } while (dot(p, p) >= 1.0); // 如果点在半径为1的球体外，则重新生成
+    return p;
 }
 
 /// 求镜面反射出射向量
@@ -29,7 +29,7 @@ vec3 random_in_unit_sphere() {
 /// \param n 平面单位法向量
 /// \return 出射光线向量
 vec3 reflect(const vec3 &v, const vec3 &n) {
-	return v - 2 * dot(v, n) * n;
+    return v - 2 * dot(v, n) * n;
 }
 
 ///
@@ -39,79 +39,79 @@ vec3 reflect(const vec3 &v, const vec3 &n) {
 /// \param refracted
 /// \return
 bool refract(const vec3 &v, const vec3 &n, float ni_over_nt, vec3 &refracted) {
-	vec3 uv = unit_vector(v);
-	float dt = dot(uv, n);
-	float discriminant = 1.0 - ni_over_nt * ni_over_nt * (1 - dt * dt);
-	if (discriminant > 0) {
-		refracted = ni_over_nt * (v - n * dt) - n * sqrt(discriminant);
-		return true;
-	} else {
-		return false;
-	}
+    vec3 uv = unit_vector(v);
+    float dt = dot(uv, n);
+    float discriminant = 1.0 - ni_over_nt * ni_over_nt * (1 - dt * dt);
+    if (discriminant > 0) {
+        refracted = ni_over_nt * (v - n * dt) - n * sqrt(discriminant);
+        return true;
+    } else {
+        return false;
+    }
 }
 
 class material {
 public:
-	virtual bool scatter(const ray &r_in, const hit_record &rec, vec3 &attenuation, ray &scattered) const = 0;
+    virtual bool scatter(const ray &r_in, const hit_record &rec, vec3 &attenuation, ray &scattered) const = 0;
 };
 
 class lambertian : public material {
 public:
-	lambertian(const vec3 &a) : albedo(a) {}
+    lambertian(const vec3 &a) : albedo(a) {}
 
-	virtual bool scatter(const ray &r_in, const hit_record &rec, vec3 &attenuation, ray &scattered) const {
-		vec3 target = rec.p + rec.normal + random_in_unit_sphere(); // 散射方向由random_in_unit_sphere()控制
-		scattered = ray(rec.p, target - rec.p);
-		attenuation = albedo; // attenuation衰减，控制散射后的光纤强度
-		return true;
-	}
+    virtual bool scatter(const ray &r_in, const hit_record &rec, vec3 &attenuation, ray &scattered) const {
+        vec3 target = rec.p + rec.normal + random_in_unit_sphere(); // 散射方向由random_in_unit_sphere()控制
+        scattered = ray(rec.p, target - rec.p);
+        attenuation = albedo; // attenuation衰减，控制散射后的光纤强度
+        return true;
+    }
 
-	vec3 albedo; // 反射率
+    vec3 albedo; // 反射率
 };
 
 // 金属材质
 class metal : public material {
 public:
-	metal(const vec3 &a) : albedo(a) {}
+    metal(const vec3 &a) : albedo(a) {}
 
-	virtual bool scatter(const ray &r_in, const hit_record &rec, vec3 &attenuation, ray &scattered) const {
-		vec3 reflected = reflect(unit_vector(r_in.direction()), rec.normal);
-		scattered = ray(rec.p, reflected);
-		attenuation = albedo;
-		return (dot(scattered.direction(), rec.normal) > 0);
-	}
+    virtual bool scatter(const ray &r_in, const hit_record &rec, vec3 &attenuation, ray &scattered) const {
+        vec3 reflected = reflect(unit_vector(r_in.direction()), rec.normal);
+        scattered = ray(rec.p, reflected);
+        attenuation = albedo;
+        return (dot(scattered.direction(), rec.normal) > 0);
+    }
 
-	vec3 albedo; // 反射率
+    vec3 albedo; // 反射率
 };
 
 // 电介质
 class dielectric : public material {
 public:
-	dielectric(float ri) : ref_idx(ri) {}
+    dielectric(float ri) : ref_idx(ri) {}
 
-	virtual bool scatter(const ray &r_in, const hit_record &rec, vec3 &attenuation, ray &scattered) const {
-		vec3 outward_normal;
-		vec3 reflected = reflect(r_in.direction(), rec.normal);
-		float ni_over_nt;
-		attenuation = vec3(1.0, 1.0, 0.0);
-		vec3 refracted;
-		if (dot(r_in.direction(), rec.normal) > 0) {
-			outward_normal = -rec.normal;
-			ni_over_nt = ref_idx;
-		} else {
-			outward_normal = rec.normal;
-			ni_over_nt = 1.0 / ref_idx;
-		}
-		if (refract(r_in.direction(), outward_normal, ni_over_nt, refracted)) {
-			scattered = ray(rec.p, refracted);
-		} else {
-			scattered = ray(rec.p, reflected);
-			return false;
-		}
-		return true;
-	}
+    virtual bool scatter(const ray &r_in, const hit_record &rec, vec3 &attenuation, ray &scattered) const {
+        vec3 outward_normal;
+        vec3 reflected = reflect(r_in.direction(), rec.normal);
+        float ni_over_nt;
+        attenuation = vec3(1.0, 1.0, 0.0);
+        vec3 refracted;
+        if (dot(r_in.direction(), rec.normal) > 0) {
+            outward_normal = -rec.normal;
+            ni_over_nt = ref_idx;
+        } else {
+            outward_normal = rec.normal;
+            ni_over_nt = 1.0 / ref_idx;
+        }
+        if (refract(r_in.direction(), outward_normal, ni_over_nt, refracted)) {
+            scattered = ray(rec.p, refracted);
+        } else {
+            scattered = ray(rec.p, reflected);
+            return false;
+        }
+        return true;
+    }
 
-	float ref_idx;
+    float ref_idx;
 };
 
 #endif //RAYTRACINGTOY_MATERIAL_H
