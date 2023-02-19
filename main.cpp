@@ -20,7 +20,7 @@ double hit_sphere(const vec3 &center, double radius, const ray &r) {
 
     // 求根公式 b = 2 * half_b
     auto a = r.direction().squared_lenght();
-    auto half_b = 2.0 * dot(oc, r.direction());
+    auto half_b = dot(oc, r.direction());
     auto c = oc.squared_lenght() - radius * radius;
     auto discriminant = half_b * half_b - a * c;
 
