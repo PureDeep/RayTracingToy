@@ -12,8 +12,8 @@
 #include "rtweekend.h"
 #include <iostream>
 
-#define random(a, b) (rand()%(b-a+1)+a) //使用rand()的一个后果是，种子相同时每次的随机结果都相同
-#define random1 (float((rand() % 100) / 100.f))
+//#define random(a, b) (rand()%(b-a+1)+a) //使用rand()的一个后果是，种子相同时每次的随机结果都相同
+//#define random1 (float((rand() % 100) / 100.f))
 
 // 球体表面法相
 double hit_sphere(const vec3 &center, double radius, const ray &r) {

@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <limits>
 #include <memory>
+#include <cstdlib>
 
 // Usings
 using std::shared_ptr;
@@ -26,6 +27,17 @@ inline double degrees_to_radians(double degrees) {
 inline double ffmin(double a, double b) { return a <= b ? a : b; }
 
 inline double ffmax(double a, double b) { return a >= b ? a : b; }
+
+// Random
+inline double random_double() {
+    // 返回[0,1)之间的随机实数
+    return rand() / (RAND_MAX + 1.0);
+}
+
+inline double random_double(double min, double max) {
+    // 返回[min,max)之间的随机实数
+    return min + (max - min) * random_double();
+}
 
 // Common Headers
 #include "ray.h"
