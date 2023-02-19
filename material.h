@@ -8,21 +8,10 @@ struct hit_record; // 不完全声明
 
 #include "ray.h"
 #include "hittable.h"
+#include "rtweekend.h"
 
 #define random(a, b) (rand()%(b-a+1)+a) //使用rand()的一个后果是，种子相同时每次的随机结果都相同
 #define random1 (float((rand() % 100) / 100.f))
-
-/// 单位cube随机取点，并返回处于球体内的一点
-/// \return
-vec3 random_in_unit_sphere() {
-    vec3 p;
-    do {
-        //srand((unsigned) time(NULL));
-        p = 2.0 * vec3(random1, random1, random1) - vec3(1, 1, 1);
-        //std::cout << random(0, 100) / 100 << std::endl;
-    } while (dot(p, p) >= 1.0); // 如果点在半径为1的球体外，则重新生成
-    return p;
-}
 
 /// 求镜面反射出射向量
 /// \param v 入射光线向量

@@ -55,6 +55,15 @@ inline static vec3 random_vec3(double min, double max) {
     return vec3(random_double(min, max), random_double(min, max), random_double(min, max));
 }
 
+// Random point int unit sphere
+static vec3 random_in_unit_sphere() {
+    while (true) {
+        auto p = random_vec3(-1, 1);
+        if (p.squared_lenght() >= 1) continue;
+        return p;
+    }
+}
+
 // Common Headers
 #include "ray.h"
 #include "vec3.h"
