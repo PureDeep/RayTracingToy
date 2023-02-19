@@ -49,8 +49,7 @@ vec3 ray_color(const ray &r, const hittable &world) {
 int main() {
     const int image_width = 600;
     const int image_height = 300;
-
-    int ns = 100;
+    const int samples_per_pixel = 100;
 
     // 调用svpng生成png格式图片
     unsigned char rgb[image_width * image_height * 3], *p = rgb;
@@ -59,29 +58,32 @@ int main() {
 
     std::cout << "Pic: " << image_width << " * " << image_height << "\n";
 
-    vec3 lower_left_corner(-2.0, -1.0, -1.0);
-    vec3 horizontal(4.0, 0.0, 0.0);
-    vec3 vertical(0.0, 2.0, 0.0);
-    vec3 origin(0.0, 0.0, 0.0);
-
     // 场景
     hittable_list world;
     world.add(make_shared<sphere>(vec3(0, 0, -1), 0.5));
     world.add(make_shared<sphere>(vec3(0, -100.5, -1), 100));
 
+    // 相机
+    camera cam;
+
     for (int j = image_height - 1; j >= 0; j--) {
         std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
         for (int i = 0; i < image_width; i++) {
-            auto u = double(i) / image_width;
-            auto v = double(j) / image_height;
+            vec3 color(0, 0, 0);
 
-            ray r(origin, lower_left_corner + u * horizontal + v * vertical);
-            vec3 color = ray_color(r, world);
+            for (int s = 0; s < samples_per_pixel; ++s) {
+                auto u = (i + random_double()) / image_width;
+                auto v = (j + random_double()) / image_height;
+                ray r = cam.get_ray(u, v);
+                color += ray_color(r, world);
+            }
+
+            auto scale = 1.0 / samples_per_pixel;
 
             // 将（0，1）映射到（0，255.99）
-            int ir = static_cast<int>(255.99 * color[0]);
-            int ig = static_cast<int>(255.99 * color[1]);
-            int ib = static_cast<int>(255.99 * color[2]);
+            int ir = static_cast<int>(255.99 * color[0]) * scale;
+            int ig = static_cast<int>(255.99 * color[1]) * scale;
+            int ib = static_cast<int>(255.99 * color[2]) * scale;
             //outfile << ir << " " << ig << " " << ib << "\n";
 
             *p++ = (unsigned char) ir;    /* R */
