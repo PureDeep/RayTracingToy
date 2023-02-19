@@ -37,7 +37,8 @@ vec3 ray_color(const ray &r, const hittable &world) {
 
     // 如果相交
     if (world.hit(r, 0, infinity, rec)) {
-        return 0.5 * (rec.normal + vec3(1, 1, 1));
+        vec3 target = rec.p + rec.normal + random_in_unit_sphere();
+        return 0.5 * ray_color(ray(rec.p, target - rec.p), world);
     }
 
     // 如果不相交
