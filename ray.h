@@ -9,31 +9,29 @@
 
 class ray {
 public:
-	ray() {}
+    ray() {}
 
-	/// 声明一条射线
-	/// \param a 射线起点
-	/// \param b 射线终点
-	ray(const vec3 &a, const vec3 &b) {
-		A = a;
-		B = b;
-	}
+    /// 声明一条射线
+    /// \param origin 射线起点
+    /// \param direction 射线终点
+    ray(const vec3 &origin, const vec3 &direction) : orig(origin), dir(direction) {
+    }
 
-	/// 返回射线起点
-	/// \return 射线起点
-	vec3 origin() const { return A; }
+    /// 返回射线起点
+    /// \return 射线起点
+    vec3 origin() const { return orig; }
 
-	/// 返回射线的指向
-	/// \return 射线的指向
-	vec3 direction() const { return B; }
+    /// 返回射线的指向
+    /// \return 射线的指向
+    vec3 direction() const { return dir; }
 
-	/// 返回射线上某一点
-	/// \param t
-	/// \return
-	vec3 point_at_parameter(float t) const { return A + B * t; }
+    /// 返回射线上某一点
+    /// \param t
+    /// \return
+    vec3 at(float t) const { return orig + dir * t; }
 
-	vec3 A;
-	vec3 B;
+    vec3 orig;
+    vec3 dir;
 };
 
 #endif //RAYTRACINGTOY_RAY_H
