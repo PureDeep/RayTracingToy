@@ -17,9 +17,9 @@ struct hit_record; // 不完全声明
 /// \param v 入射光线向量
 /// \param n 平面单位法向量
 /// \return 出射光线向量
-vec3 reflect(const vec3 &v, const vec3 &n) {
-    return v - 2 * dot(v, n) * n;
-}
+//vec3 reflect(const vec3 &v, const vec3 &n) {
+//    return v - 2 * dot(v, n) * n;
+//}
 
 ///
 /// \param v
@@ -44,13 +44,14 @@ public:
     virtual bool scatter(const ray &r_in, const hit_record &rec, vec3 &attenuation, ray &scattered) const = 0;
 };
 
+// 漫反射
 class lambertian : public material {
 public:
     lambertian(const vec3 &a) : albedo(a) {}
 
     virtual bool scatter(const ray &r_in, const hit_record &rec, vec3 &attenuation, ray &scattered) const {
-        vec3 target = rec.p + rec.normal + random_in_unit_sphere(); // 散射方向由random_in_unit_sphere()控制
-        scattered = ray(rec.p, target - rec.p);
+        vec3 scatter_direction = rec.normal + random_unit_vector(); // 散射方向由random_unit_vector()控制
+        scattered = ray(rec.p, scatter_direction);
         attenuation = albedo; // attenuation衰减，控制散射后的光纤强度
         return true;
     }

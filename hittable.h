@@ -6,14 +6,15 @@
 #define RAYTRACINGTOY_HITTABLE_H
 
 #include "ray.h"
+#include "rtweekend.h"
 
 class material; //不完全声明
 
 struct hit_record {
-    float t; // 射线参数t
+    double t; // 射线参数t
     vec3 p; // 射线与物体的交点（碰撞点）
     vec3 normal; // 碰撞点处的法线向量
-    //material *mat_ptr; // 保存碰撞点处的材质
+    shared_ptr<material> mat_ptr; // 保存碰撞点处的材质
     bool front_face; // 用于判断入射面是正面还是反面
 
     /// 设置碰撞的入射面以及碰撞点的法线方向

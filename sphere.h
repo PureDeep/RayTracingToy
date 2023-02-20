@@ -13,13 +13,13 @@ public:
     sphere() {}
 
     // 构造球心为cen，半径为r的球体
-    sphere(vec3 cen, float r/*, material *mat*/) : center(cen), radius(r)/*, mat_ptr(mat)*/ {};
+    sphere(vec3 cen, float r, shared_ptr<material> mat) : center(cen), radius(r), mat_ptr(mat) {};
 
     virtual bool hit(const ray &r, float t_min, float t_max, hit_record &rec) const;
 
     vec3 center; // 球心坐标
     float radius; // 球体半径
-    //material *mat_ptr; // 球体材质
+    shared_ptr<material> mat_ptr; // 球体材质
 };
 
 bool sphere::hit(const ray &r, float t_min, float t_max, hit_record &rec) const {
@@ -40,7 +40,7 @@ bool sphere::hit(const ray &r, float t_min, float t_max, hit_record &rec) const 
             rec.p = r.at(rec.t);
             vec3 outward_normal = (rec.p - center) / radius;
             rec.set_face_normal(r, outward_normal);
-            //rec.mat_ptr = mat_ptr;
+            rec.mat_ptr = mat_ptr;
             return true;
         }
         temp = (-half_b + root) / a;
@@ -49,7 +49,7 @@ bool sphere::hit(const ray &r, float t_min, float t_max, hit_record &rec) const 
             rec.p = r.at(rec.t);
             vec3 outward_normal = (rec.p - center) / radius;
             rec.set_face_normal(r, outward_normal);
-            //rec.mat_ptr = mat_ptr;
+            rec.mat_ptr = mat_ptr;
             return true;
         }
     }
