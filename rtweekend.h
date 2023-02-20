@@ -64,6 +64,15 @@ vec3 random_in_unit_sphere() {
     }
 }
 
+// 从单位圆盘射出光线
+vec3 random_in_unit_disk() {
+    while (true) {
+        auto p = vec3(random_double(-1, 1), random_double(-1, 1), 0);
+        if (p.squared_lenght() >= 1) continue;
+        return p;
+    }
+}
+
 // Random unit vector
 vec3 random_unit_vector() {
     auto a = random_double(0, 2 * pi);  // 随机角度
