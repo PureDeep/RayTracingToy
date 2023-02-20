@@ -61,6 +61,8 @@ int main() {
     const int image_height = 300;
     const int samples_per_pixel = 100;
     const int max_depth = 100;
+    const auto aspect_ratio = double(image_width) / image_height;
+    const vec3 vup = vec3(0, 1, 0);
 
     // 调用svpng生成png格式图片
     unsigned char rgb[image_width * image_height * 3], *p = rgb;
@@ -87,7 +89,7 @@ int main() {
             vec3(-1, 0, -1), -0.45, make_shared<dielectric>(1.5)));
 
     // 相机
-    camera cam;
+    camera cam(vec3(0, 2, 2), vec3(0, 0, -1), vup, 90, aspect_ratio);
 
     for (int j = image_height - 1; j >= 0; j--) {
         std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
