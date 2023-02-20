@@ -87,10 +87,15 @@ int main() {
 
             auto scale = 1.0 / samples_per_pixel;
 
+            // Gamma correct
+            auto r = sqrt(scale * color[0]);
+            auto g = sqrt(scale * color[1]);
+            auto b = sqrt(scale * color[2]);
+
             // 将（0，1）映射到（0，255.99）
-            int ir = static_cast<int>(255.99 * color[0]) * scale;
-            int ig = static_cast<int>(255.99 * color[1]) * scale;
-            int ib = static_cast<int>(255.99 * color[2]) * scale;
+            int ir = static_cast<int>(256 * clamp(r, 0.0, 0.999));
+            int ig = static_cast<int>(255.99 * clamp(g, 0.0, 0.999));
+            int ib = static_cast<int>(255.99 * clamp(b, 0.0, 0.999));
             //outfile << ir << " " << ig << " " << ib << "\n";
 
             *p++ = (unsigned char) ir;    /* R */
