@@ -81,24 +81,19 @@ public:
     dielectric(float ri) : ref_idx(ri) {}
 
     virtual bool scatter(const ray &r_in, const hit_record &rec, vec3 &attenuation, ray &scattered) const {
-        vec3 outward_normal;
-        vec3 reflected = reflect(r_in.direction(), rec.normal);
-        float ni_over_nt;
         attenuation = vec3(1.0, 1.0, 0.0);
-        vec3 refracted;
-        if (dot(r_in.direction(), rec.normal) > 0) {
-            outward_normal = -rec.normal;
-            ni_over_nt = ref_idx;
+
+        double etai_over_etat;
+        if (rec.front_face) {
+            etai_over_etat = 1.0 / ref_idx;
         } else {
-            outward_normal = rec.normal;
-            ni_over_nt = 1.0 / ref_idx;
+            etai_over_etat = ref_idx;
         }
-        if (refract(r_in.direction(), outward_normal, ni_over_nt, refracted)) {
-            scattered = ray(rec.p, refracted);
-        } else {
-            scattered = ray(rec.p, reflected);
-            return false;
-        }
+
+        vec3 unit_direction = unit_vector(r_in.direction());
+        vec3 refracted = refract(unit_direction, rec.normal, etai_over_etat);
+        scattered = ray(rec.p, refracted);
+
         return true;
     }
 
