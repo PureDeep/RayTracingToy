@@ -64,6 +64,14 @@ static vec3 random_in_unit_sphere() {
     }
 }
 
+// Random unit vector
+static vec3 random_unit_vector() {
+    auto a = random_double(0, 2 * pi);  // 随机角度
+    auto z = random_double(-1, 1);      // 随机z轴投影长度
+    auto r = sqrt(1 - z * z);                  // xy平面投影长度
+    return vec3(r * cos(a), r * sin(a), z); // 单位向量
+}
+
 // Common Headers
 #include "ray.h"
 #include "vec3.h"
