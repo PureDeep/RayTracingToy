@@ -15,14 +15,14 @@ public:
     // 构造球心为cen，半径为r的球体
     sphere(vec3 cen, float r, shared_ptr<material> mat) : center(cen), radius(r), mat_ptr(mat) {};
 
-    virtual bool hit(const ray &r, float t_min, float t_max, hit_record &rec) const;
+    virtual bool hit(const ray &r, double t_min, double t_max, hit_record &rec) const;
 
     vec3 center; // 球心坐标
     float radius; // 球体半径
     shared_ptr<material> mat_ptr; // 球体材质
 };
 
-bool sphere::hit(const ray &r, float t_min, float t_max, hit_record &rec) const {
+bool sphere::hit(const ray &r, double t_min, double t_max, hit_record &rec) const {
     vec3 oc = r.origin() - center;
     auto a = r.direction().squared_lenght();
     auto half_b = dot(oc, r.direction());

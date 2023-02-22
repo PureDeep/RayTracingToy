@@ -72,7 +72,10 @@ hittable_list random_scene() {
                     // diffuse
                     auto albedo = random_vec3() * random_vec3();
                     world.add(
-                            make_shared<sphere>(center, 0.2, make_shared<lambertian>(albedo)));
+                            make_shared<moving_sphere>(
+                                    center, center + vec3(0, random_double(0, 0.5), 0), 0.0, 1.0,
+                                    0.2,
+                                    make_shared<lambertian>(albedo)));
                 } else if (choose_mat < 0.95) {
                     // metal
                     auto albedo = random_vec3(.5, 1);
@@ -134,8 +137,8 @@ int main() {
     vec3 lookfrom(13, 2, 3);
     vec3 lookat(0, 0, 0);
     auto dist_to_focus = 10.0;
-    auto aperture = 0.1;
-    camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus);
+    auto aperture = 0.0;
+    camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);
 
     for (int j = image_height - 1; j >= 0; j--) {
         std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
