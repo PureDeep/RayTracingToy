@@ -110,6 +110,43 @@ double schlick(double cosine, double ref_idx) {
     return r0 + (1 - r0) * pow((1 - cosine), 5);
 }
 
+class aabb {
+public:
+    aabb() {}
+
+    aabb(const vec3 &a, const vec3 &b) {
+        _min = a;
+        _max = b;
+    }
+
+    vec3 min() const { return _min; }
+
+    vec3 max() const { return _max; }
+
+    bool hit(const ray &r, double tmin, double tmax) const {
+        // x,y,z依次做aabb交
+        for (int a = 0; a < 3; a++) {
+            auto t0 = ffmin(
+                    (_min[a] - r.origin()[a]) / r.direction()[a],
+                    (_max[a] - r.origin()[a]) / r.direction()[a]
+            );
+            auto t1 = ffmax(
+                    (_min[a] - r.origin()[a]) / r.direction()[a],
+                    (_max[a] - r.origin()[a]) / r.direction()[a]
+            );
+            tmin = ffmax(t0, tmin);
+            tmax = ffmin(t1, tmax);
+            if (tmax <= tmin) {
+                return false;
+            }
+            return true;
+        }
+    }
+
+    vec3 _min;
+    vec3 _max;
+};
+
 // Common Headers
 #include "ray.h"
 #include "vec3.h"
