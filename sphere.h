@@ -17,6 +17,8 @@ public:
 
     virtual bool hit(const ray &r, double t_min, double t_max, hit_record &rec) const;
 
+    virtual bool bounding_box(double t0, double t1, aabb &output_box) const;
+
     vec3 center; // 球心坐标
     float radius; // 球体半径
     shared_ptr<material> mat_ptr; // 球体材质
@@ -56,6 +58,14 @@ bool sphere::hit(const ray &r, double t_min, double t_max, hit_record &rec) cons
     return false;
 }
 
+bool sphere::bounding_box(double t0, double t1, aabb &output_box) const {
+    output_box = aabb(
+            center - vec3(radius, radius, radius),
+            center + vec3(radius, radius, radius)
+    );
+    return true;
+}
+
 // Moving sphere
 class moving_sphere : public hittable {
 public:
@@ -65,6 +75,8 @@ public:
             : center0(cen0), center1(cen1), time0(t0), time1(t1), radius(r), mat_ptr(m) {};
 
     virtual bool hit(const ray &r, double tmin, double tmax, hit_record &rec) const;
+
+    virtual bool bounding_box(double t0, double t1, aabb &output_box) const;
 
     vec3 center(double time) const;
 
@@ -111,6 +123,19 @@ bool moving_sphere::hit(const ray &r, double tmin, double tmax, hit_record &rec)
         }
     }
     return false;
+}
+
+bool moving_sphere::bounding_box(double t0, double t1, aabb &output_box) const {
+    aabb box0(
+            center(t0) - vec3(radius, radius, radius),
+            center(t0) + vec3(radius, radius, radius)
+    );
+    aabb box1(
+            center(t1) - vec3(radius, radius, radius),
+            center(t1) + vec3(radius, radius, radius)
+    );
+    output_box = surrouding_box(box0, box1);
+    return true;
 }
 
 
