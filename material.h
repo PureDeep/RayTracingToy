@@ -51,7 +51,7 @@ public:
 
     virtual bool scatter(const ray &r_in, const hit_record &rec, vec3 &attenuation, ray &scattered) const {
         vec3 scatter_direction = rec.normal + random_unit_vector(); // 散射方向由random_unit_vector()控制
-        scattered = ray(rec.p, scatter_direction);
+        scattered = ray(rec.p, scatter_direction, r_in.time());
         attenuation = albedo; // attenuation衰减，控制散射后的光纤强度
         return true;
     }
