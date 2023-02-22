@@ -14,7 +14,8 @@ public:
     /// 声明一条射线
     /// \param origin 射线起点
     /// \param direction 射线终点
-    ray(const vec3 &origin, const vec3 &direction) : orig(origin), dir(direction) {
+    ray(const vec3 &origin, const vec3 &direction, double time = 0.0)
+            : orig(origin), dir(direction), tm(time) {
     }
 
     /// 返回射线起点
@@ -25,13 +26,16 @@ public:
     /// \return 射线的指向
     vec3 direction() const { return dir; }
 
+    double time() const { return tm; }
+
     /// 返回射线上某一点
     /// \param t
     /// \return
-    vec3 at(float t) const { return orig + dir * t; }
+    vec3 at(double t) const { return orig + dir * t; }
 
     vec3 orig;
     vec3 dir;
+    double tm;
 };
 
 #endif //RAYTRACINGTOY_RAY_H
