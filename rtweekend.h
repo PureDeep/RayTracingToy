@@ -34,6 +34,10 @@ inline double random_double() {
     return rand() / (RAND_MAX + 1.0);
 }
 
+inline int random_int(int min, int max) {
+    return int(rand() % (max - min + 1) + min);
+}
+
 inline double random_double(double min, double max) {
     // 返回[min,max)之间的随机实数
     return min + (max - min) * random_double();
@@ -145,7 +149,7 @@ public:
     vec3 _max;
 };
 
-aabb surrouding_box(aabb box0, aabb box1) {
+aabb surrounding_box(aabb box0, aabb box1) {
     vec3 small(
             ffmin(box0.min().x(), box1.min().x()),
             ffmin(box0.min().y(), box1.min().y()),
